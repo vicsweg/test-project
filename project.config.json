@@ -1,0 +1,18 @@
+{
+  "description": "微信小程序原型：公众号文章收集与按天/按周整理",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "miniprogramRoot": ".",
+  "appid": "touristappid",
+  "projectname": "wechat-article-assistant",
+  "simulatorType": "wechat"
+}

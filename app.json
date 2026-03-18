@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "文章线索助手",
+    "navigationBarBackgroundColor": "#f7f8fc",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f4f6fb",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
