@@ -1,10 +1,5 @@
-.page-shell {
-  min-height: 100vh;
-  padding: 32rpx;
-  background:
-    radial-gradient(circle at top left, rgba(147, 197, 253, 0.35), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(196, 181, 253, 0.35), transparent 28%),
-    #f4f6fb;
+.page {
+  padding: 24rpx;
   display: flex;
   flex-direction: column;
   gap: 24rpx;
@@ -12,219 +7,175 @@
 
 .card {
   background: rgba(255, 255, 255, 0.96);
-  border-radius: 32rpx;
-  box-shadow: 0 20rpx 50rpx rgba(32, 51, 84, 0.12);
+  border-radius: 28rpx;
+  padding: 28rpx;
+  box-shadow: 0 18rpx 50rpx rgba(47, 74, 117, 0.12);
 }
 
-.article-panel {
-  position: relative;
-  padding: 36rpx;
+.hero {
+  background: linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
 }
 
-.badge,
-.message-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10rpx 20rpx;
+.hero__badge {
+  display: inline-block;
+  padding: 10rpx 18rpx;
   border-radius: 999rpx;
-  background: rgba(17, 24, 39, 0.08);
-  color: #111827;
+  background: #e8eefc;
+  color: #1a3568;
   font-size: 24rpx;
   font-weight: 600;
 }
 
-.article-title {
-  margin-top: 20rpx;
-  font-size: 56rpx;
+.hero__title {
+  margin-top: 18rpx;
+  font-size: 52rpx;
   line-height: 1.2;
   font-weight: 700;
-  color: #102033;
 }
 
-.article-meta,
+.hero__desc,
+.tip,
+.muted,
 .message-meta,
-.assistant-label {
-  margin-top: 16rpx;
-  color: #617086;
-  font-size: 24rpx;
-  display: flex;
-  gap: 16rpx;
-  flex-wrap: wrap;
+.message-excerpt,
+.message-note,
+.timeline-item {
+  color: #60708a;
 }
 
-.article-content {
-  margin-top: 28rpx;
-}
-
-.article-paragraph {
-  margin-top: 18rpx;
-  color: #102033;
-  font-size: 30rpx;
-  line-height: 1.9;
-}
-
-.article-summary-box {
-  margin-top: 28rpx;
-  padding: 24rpx;
-  border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 2rpx dashed rgba(16, 32, 51, 0.14);
-}
-
-.summary-label,
-.section-title,
-.assistant-title,
-.message-title {
-  color: #102033;
-  font-weight: 700;
-}
-
-.summary-label,
-.assistant-label,
-.theme-item,
-.digest-line,
-.message-text,
-.digest-summary {
-  font-size: 26rpx;
-}
-
-.summary-text,
-.message-text,
+.hero__desc,
+.tip,
 .digest-summary,
-.digest-line,
-.empty-state,
-.theme-item {
-  margin-top: 12rpx;
-  color: #617086;
+.message-excerpt,
+.message-note,
+.timeline-item {
+  margin-top: 18rpx;
+  font-size: 28rpx;
   line-height: 1.7;
 }
 
-.floating-button {
-  position: absolute;
-  right: 28rpx;
-  bottom: 28rpx;
-  width: 112rpx;
-  height: 112rpx;
-  padding: 0;
-  border-radius: 999rpx;
-  background: linear-gradient(180deg, #1f2937, #030712);
-  color: #ffffff;
-  box-shadow: 0 16rpx 36rpx rgba(17, 24, 39, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.tip {
+  padding: 18rpx;
+  border-radius: 20rpx;
+  background: #f7f9fe;
+  border: 2rpx dashed #d6e0f5;
 }
 
-.floating-button::after,
-.toggle-button::after {
+.section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #102033;
+}
+
+.url-input {
+  width: 100%;
+  min-height: 180rpx;
+  margin-top: 20rpx;
+  padding: 20rpx;
+  border-radius: 22rpx;
+  background: #f6f8fc;
+  border: 2rpx solid #d8e0f1;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.button-row,
+.toolbar,
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.button-row,
+.toolbar {
+  margin-top: 20rpx;
+}
+
+.toolbar {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button {
+  margin: 0;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  line-height: 1;
+  padding: 0 24rpx;
+}
+
+.button::after {
   border: none;
 }
 
-.floating-button text {
-  font-size: 56rpx;
-  line-height: 1;
+.button--primary {
+  background: linear-gradient(180deg, #1f2937 0%, #030712 100%);
+  color: #ffffff;
 }
 
-.assistant-panel {
-  padding: 28rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
-.assistant-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 16rpx;
-  align-items: flex-start;
-}
-
-.assistant-title {
-  margin-top: 12rpx;
-  font-size: 42rpx;
-}
-
-.toggle-button {
-  margin: 0;
-  padding: 0 24rpx;
-  border-radius: 999rpx;
+.button--ghost {
   background: #ffffff;
   color: #102033;
-  border: 2rpx solid rgba(16, 32, 51, 0.1);
-  font-size: 26rpx;
-}
-
-.card-section,
-.digest-section {
-  padding: 20rpx;
-  border-radius: 24rpx;
-  border: 2rpx solid rgba(16, 32, 51, 0.1);
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.message-item,
-.digest-item {
-  margin-top: 16rpx;
-  padding: 18rpx;
-  border-radius: 22rpx;
-  background: #ffffff;
-  border: 2rpx solid rgba(16, 32, 51, 0.08);
-}
-
-.message-title {
-  margin-top: 12rpx;
-  font-size: 30rpx;
-  line-height: 1.45;
+  border: 2rpx solid #d8e0f1;
 }
 
 .digest-summary {
   color: #102033;
 }
 
-.theme-list,
-.digest-lines {
-  margin-top: 18rpx;
+.timeline {
+  margin-top: 20rpx;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 16rpx;
 }
 
-.theme-item {
-  padding: 16rpx;
-  border-radius: 18rpx;
-  background: rgba(219, 234, 254, 0.55);
-  color: #23457a;
-}
-
-.digest-line {
-  padding: 16rpx;
-  border-radius: 18rpx;
+.timeline-item,
+.message-item {
+  padding: 20rpx;
+  border-radius: 22rpx;
   background: #f9fbff;
+  border: 2rpx solid #e4ecfb;
 }
 
-.empty-state {
-  margin-top: 16rpx;
-  padding: 18rpx;
-  border-radius: 18rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 2rpx dashed rgba(16, 32, 51, 0.16);
+.copy-button {
+  margin-top: 24rpx;
 }
 
-
-.digest-block {
-  margin-top: 22rpx;
+.messages-box {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
 }
 
-.digest-block__title {
-  color: #102033;
-  font-size: 28rpx;
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16rpx;
+  font-size: 24rpx;
+}
+
+.message-title {
+  margin-top: 12rpx;
+  font-size: 32rpx;
+  line-height: 1.4;
   font-weight: 700;
 }
 
-.digest-paragraph {
-  margin-top: 12rpx;
-  color: #617086;
-  font-size: 26rpx;
-  line-height: 1.75;
+.chip {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #eaf1ff;
+  color: #1a3568;
+  font-size: 24rpx;
+}
+
+.chip--light {
+  background: #ffffff;
+  border: 2rpx solid #dce7fb;
+}
+
+.compact {
+  margin-top: 14rpx;
 }
