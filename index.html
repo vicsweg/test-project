@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>微信文章收藏到文件传输助手原型</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f6fb;
+        --card: rgba(255, 255, 255, 0.96);
+        --text: #102033;
+        --muted: #617086;
+        --line: rgba(16, 32, 51, 0.1);
+        --accent: #111827;
+        --accent-soft: rgba(17, 24, 39, 0.08);
+        --shadow: 0 20px 50px rgba(32, 51, 84, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(147, 197, 253, 0.35), transparent 30%),
+          radial-gradient(circle at bottom right, rgba(196, 181, 253, 0.35), transparent 28%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .app-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 24px;
+        padding: 32px;
+      }
+
+      .article-panel,
+      .assistant-card {
+        background: var(--card);
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        box-shadow: var(--shadow);
+        border-radius: 28px;
+      }
+
+      .article-panel {
+        position: relative;
+        padding: 36px;
+      }
+
+      .badge,
+      .message-tag,
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .article-header h1,
+      .assistant-header h2,
+      .assistant-header h3 {
+        margin: 16px 0 10px;
+      }
+
+      .article-header h1 {
+        font-size: clamp(28px, 4vw, 42px);
+        line-height: 1.15;
+      }
+
+      .article-meta,
+      .message-item__meta,
+      .assistant-label,
+      .idea-line__meta {
+        color: var(--muted);
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+
+      .article-content {
+        margin-top: 28px;
+        line-height: 1.9;
+        font-size: 18px;
+      }
+
+      .article-content p + p {
+        margin-top: 18px;
+      }
+
+      .floating-button {
+        position: absolute;
+        right: 28px;
+        bottom: 28px;
+        width: 72px;
+        height: 72px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #1f2937, #030712);
+        color: white;
+        box-shadow:
+          0 12px 30px rgba(17, 24, 39, 0.35),
+          inset 0 2px 8px rgba(255, 255, 255, 0.18);
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .floating-button span {
+        display: inline-block;
+        font-size: 38px;
+        line-height: 1;
+        transform: translateY(-1px);
+      }
+
+      .floating-button:hover {
+        transform: translateY(-2px) scale(1.01);
+      }
+
+      .floating-button:active {
+        transform: scale(0.96);
+      }
+
+      .toast {
+        position: absolute;
+        right: 28px;
+        bottom: 116px;
+        max-width: 260px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(17, 24, 39, 0.92);
+        color: white;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 180ms ease, transform 180ms ease;
+        pointer-events: none;
+        font-size: 14px;
+      }
+
+      .toast.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .assistant-card {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 28px;
+        height: 100%;
+      }
+
+      .assistant-header,
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .assistant-header {
+        flex-wrap: wrap;
+      }
+
+      .summary-toggle {
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--text);
+        border-radius: 999px;
+        padding: 10px 16px;
+        cursor: pointer;
+      }
+
+      .message-list,
+      .digest-box,
+      .idea-thread {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      #messages,
+      #digest,
+      #idea-lines {
+        display: grid;
+        gap: 14px;
+      }
+
+      .message-item,
+      .digest-item,
+      .idea-line {
+        padding: 16px;
+        border-radius: 18px;
+        background: white;
+        border: 1px solid rgba(16, 32, 51, 0.08);
+      }
+
+      .message-item h4,
+      .digest-box h4,
+      .message-list h3,
+      .digest-box h3,
+      .idea-thread h3,
+      .idea-line h4 {
+        margin: 10px 0 8px;
+      }
+
+      .message-item p,
+      .digest-item p,
+      .digest-item ul,
+      .idea-line p,
+      .idea-line ul {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .digest-item {
+        background: linear-gradient(180deg, rgba(219, 234, 254, 0.5), rgba(255, 255, 255, 0.95));
+        border: 1px solid rgba(59, 130, 246, 0.12);
+      }
+
+      .digest-item ul,
+      .idea-line ul {
+        padding-left: 20px;
+        margin-top: 12px;
+      }
+
+      .idea-line {
+        border-left: 4px solid #60a5fa;
+      }
+
+      .chip-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        border: 1px dashed rgba(16, 32, 51, 0.16);
+      }
+
+      .single-file-tip {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px dashed rgba(16, 32, 51, 0.14);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 960px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+          padding: 18px;
+        }
+
+        .article-panel {
+          padding-bottom: 128px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="article-panel">
+        <header class="article-header">
+          <span class="badge">微信公众号文章</span>
+          <h1 id="article-title">把 AI 工作流连点成线：今天看到的内容，今晚自动整理给自己</h1>
+          <div class="article-meta">
+            <span id="article-author">连点成线实验室</span>
+            <span id="article-date"></span>
+          </div>
+        </header>
+
+        <article class="article-content">
+          <p>
+            当你刷到一篇值得存档的公众号文章时，往往要么收藏后就沉底，要么手动转发给文件传输助手，后续仍然缺少按天、按周的统一整理。
+          </p>
+          <p>
+            这个版本改成了单文件可运行：你直接双击打开一个 HTML 文件，也能看到圆形按钮、保存动作和整理结果，不再依赖额外的 CSS / JS 文件。
+          </p>
+          <p>
+            点击右下角圆形按钮后，文章会被放入“文件传输助手”；右侧会按“今日整理”和“本周脉络”生成摘要，并进一步把相近主题串成“连点成线”。
+          </p>
+        </article>
+
+        <div class="single-file-tip">
+          提示：这个页面现在是<strong>单文件版</strong>，把 `index.html` 单独发给别人，对方直接打开也能用。
+        </div>
+
+        <button id="save-button" class="floating-button" aria-label="发送到文件传输助手" title="发送到文件传输助手">
+          <span>＋</span>
+        </button>
+
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </section>
+
+      <aside class="assistant-panel">
+        <div class="assistant-card">
+          <div class="assistant-header">
+            <div>
+              <p class="assistant-label">文件传输助手</p>
+              <h2>自动归类整理</h2>
+            </div>
+            <button id="summary-mode" class="summary-toggle" type="button">切换为周整理</button>
+          </div>
+
+          <section class="message-list">
+            <h3>已收录消息</h3>
+            <div id="messages"></div>
+          </section>
+
+          <section class="digest-box">
+            <h3 id="digest-title">今日整理</h3>
+            <div id="digest"></div>
+          </section>
+
+          <section class="idea-thread">
+            <div class="toolbar">
+              <div>
+                <p class="assistant-label">连点成线</p>
+                <h3>主题串联结果</h3>
+              </div>
+            </div>
+            <div id="idea-lines"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <template id="message-template">
+      <article class="message-item">
+        <div class="message-item__meta">
+          <span class="message-tag">公众号文章</span>
+          <time></time>
+        </div>
+        <h4></h4>
+        <p></p>
+      </article>
+    </template>
+
+    <script>
+      (function () {
+        function safeId(prefix) {
+          return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        var article = {
+          id: safeId('article'),
+          title: '把 AI 工作流连点成线：今天看到的内容，今晚自动整理给自己',
+          author: '连点成线实验室',
+          excerpt: '轻点一个圆形按钮，即可把当前公众号文章发送到文件传输助手；系统按天归档、按周串联，再整理回发给你。',
+          contentTags: ['AI 工作流', '知识管理', '公众号灵感']
+        };
+
+        var state = {
+          mode: 'day',
+          savedMessages: []
+        };
+
+        var articleDate = document.getElementById('article-date');
+        var messagesEl = document.getElementById('messages');
+        var digestEl = document.getElementById('digest');
+        var digestTitleEl = document.getElementById('digest-title');
+        var ideaLinesEl = document.getElementById('idea-lines');
+        var saveButton = document.getElementById('save-button');
+        var summaryButton = document.getElementById('summary-mode');
+        var toast = document.getElementById('toast');
+        var messageTemplate = document.getElementById('message-template');
+        var now = new Date();
+
+        articleDate.textContent = formatDateTime(now);
+        autoSeedHistory();
+        render();
+
+        saveButton.addEventListener('click', function () {
+          var timestamp = new Date();
+          state.savedMessages.unshift({
+            id: safeId('message'),
+            title: article.title,
+            author: article.author,
+            excerpt: article.excerpt,
+            contentTags: article.contentTags.slice(),
+            savedAt: timestamp,
+            note: '已发送到文件传输助手，等待按天/按周整理。'
+          });
+
+          render();
+          showToast('已放入文件传输助手，并加入今日整理队列。');
+        });
+
+        summaryButton.addEventListener('click', function () {
+          state.mode = state.mode === 'day' ? 'week' : 'day';
+          summaryButton.textContent = state.mode === 'day' ? '切换为周整理' : '切换为日整理';
+          renderDigest();
+          renderIdeaLines();
+        });
+
+        function autoSeedHistory() {
+          var yesterday = new Date(now.getTime());
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          var threeDaysAgo = new Date(now.getTime());
+          threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+          state.savedMessages.push(
+            {
+              id: safeId('message'),
+              title: '我把提示词、知识库、公众号收藏接成一个循环',
+              author: '效率研究所',
+              excerpt: '从信息输入到自动回顾，关键不是记得更多，而是形成固定的整理路径。',
+              contentTags: ['提示词', '知识库', '自动回顾'],
+              savedAt: yesterday,
+              note: '归入昨日灵感。'
+            },
+            {
+              id: safeId('message'),
+              title: '真正有用的灵感系统，不是收藏，而是二次重组',
+              author: '第二大脑手册',
+              excerpt: '当一周内的多篇文章围绕相同主题出现，应该自动识别并连成主题线。',
+              contentTags: ['灵感系统', '二次重组', '主题线'],
+              savedAt: threeDaysAgo,
+              note: '归入本周脉络。'
+            }
+          );
+        }
+
+        function render() {
+          renderMessages();
+          renderDigest();
+          renderIdeaLines();
+        }
+
+        function renderMessages() {
+          messagesEl.innerHTML = '';
+
+          if (!state.savedMessages.length) {
+            messagesEl.innerHTML = '<div class="empty-state">还没有收录消息。点击右下角圆形按钮，模拟把文章发到文件传输助手。</div>';
+            return;
+          }
+
+          state.savedMessages
+            .slice()
+            .sort(function (a, b) {
+              return b.savedAt - a.savedAt;
+            })
+            .forEach(function (message) {
+              var fragment = messageTemplate.content.cloneNode(true);
+              fragment.querySelector('time').textContent = formatShortTime(message.savedAt);
+              fragment.querySelector('h4').textContent = message.title;
+              fragment.querySelector('p').textContent = message.excerpt + ' ' + message.note;
+              messagesEl.appendChild(fragment);
+            });
+        }
+
+        function renderDigest() {
+          digestEl.innerHTML = '';
+          var groupedMessages = state.mode === 'day' ? groupByDay(state.savedMessages) : groupByWeek(state.savedMessages);
+          digestTitleEl.textContent = state.mode === 'day' ? '今日整理' : '本周脉络';
+
+          if (!groupedMessages.length) {
+            digestEl.innerHTML = '<div class="empty-state">暂无可整理内容。</div>';
+            return;
+          }
+
+          groupedMessages.forEach(function (group) {
+            var wrapper = document.createElement('article');
+            wrapper.className = 'digest-item';
+
+            var heading = document.createElement('h4');
+            heading.textContent = group.label;
+
+            var summary = document.createElement('p');
+            summary.textContent = buildSummary(group.items, state.mode);
+
+            var bulletList = document.createElement('ul');
+            collectThemes(group.items).forEach(function (theme) {
+              var li = document.createElement('li');
+              li.textContent = theme;
+              bulletList.appendChild(li);
+            });
+
+            wrapper.appendChild(heading);
+            wrapper.appendChild(summary);
+            wrapper.appendChild(bulletList);
+            digestEl.appendChild(wrapper);
+          });
+        }
+
+        function renderIdeaLines() {
+          ideaLinesEl.innerHTML = '';
+          var lines = buildIdeaLines(state.savedMessages, state.mode);
+
+          if (!lines.length) {
+            ideaLinesEl.innerHTML = '<div class="empty-state">还没有形成主题线，先保存几篇文章试试。</div>';
+            return;
+          }
+
+          lines.forEach(function (line) {
+            var item = document.createElement('article');
+            item.className = 'idea-line';
+
+            var meta = document.createElement('div');
+            meta.className = 'idea-line__meta';
+            meta.textContent = line.range;
+
+            var title = document.createElement('h4');
+            title.textContent = line.title;
+
+            var text = document.createElement('p');
+            text.textContent = line.summary;
+
+            var bullets = document.createElement('ul');
+            line.points.forEach(function (point) {
+              var li = document.createElement('li');
+              li.textContent = point;
+              bullets.appendChild(li);
+            });
+
+            var chips = document.createElement('div');
+            chips.className = 'chip-row';
+            line.tags.forEach(function (tag) {
+              var chip = document.createElement('span');
+              chip.className = 'chip';
+              chip.textContent = tag;
+              chips.appendChild(chip);
+            });
+
+            item.appendChild(meta);
+            item.appendChild(title);
+            item.appendChild(text);
+            item.appendChild(bullets);
+            item.appendChild(chips);
+            ideaLinesEl.appendChild(item);
+          });
+        }
+
+        function groupByDay(messages) {
+          var todayKey = formatDayKey(now);
+          var todayItems = messages.filter(function (message) {
+            return formatDayKey(message.savedAt) === todayKey;
+          });
+
+          return todayItems.length ? [{ label: '今天收录的消息', items: todayItems }] : [];
+        }
+
+        function groupByWeek(messages) {
+          var weekItems = messages.filter(function (message) {
+            return daysBetween(message.savedAt, now) < 7;
+          });
+
+          return weekItems.length ? [{ label: '最近 7 天主题串联', items: weekItems }] : [];
+        }
+
+        function buildSummary(items, mode) {
+          var titles = items.map(function (item) {
+            return '《' + item.title + '》';
+          }).join('、');
+          var themes = collectThemes(items);
+
+          if (mode === 'day') {
+            return '今天共收录 ' + items.length + ' 条消息，重点围绕 ' + themes.slice(0, 2).join('、') + ' 展开，可在今晚统一回顾：' + titles + '。';
+          }
+
+          return '本周已形成 ' + items.length + ' 条可串联线索，从 ' + themes.slice(0, 3).join('、') + ' 几个方向反复出现，建议整理为一份“连点成线”周报：' + titles + '。';
+        }
+
+        function buildIdeaLines(messages, mode) {
+          var scoped = mode === 'day'
+            ? messages.filter(function (message) { return formatDayKey(message.savedAt) === formatDayKey(now); })
+            : messages.filter(function (message) { return daysBetween(message.savedAt, now) < 7; });
+
+          if (!scoped.length) {
+            return [];
+          }
+
+          return [
+            {
+              range: mode === 'day' ? '今天新增的线索' : '最近 7 天反复出现的线索',
+              title: mode === 'day' ? '今天这批消息可以怎样整理回发给你' : '本周这些消息已经可以串成一个主题周报',
+              summary: mode === 'day'
+                ? '文件传输助手可以把今天保存的内容收束成一条晚间回顾消息，帮你从“看见”走到“复盘”。'
+                : '文件传输助手可以把这一周保存的内容串成同一条主线，避免消息堆积却没有结构。',
+              points: scoped.map(function (item, index) {
+                return (index + 1) + '. ' + item.title + ' → ' + item.excerpt;
+              }),
+              tags: collectThemes(scoped).slice(0, 4)
+            }
+          ];
+        }
+
+        function collectThemes(items) {
+          var counts = {};
+          items.forEach(function (item) {
+            item.contentTags.forEach(function (theme) {
+              counts[theme] = (counts[theme] || 0) + 1;
+            });
+          });
+
+          return Object.keys(counts)
+            .sort(function (a, b) {
+              return counts[b] - counts[a];
+            })
+            .map(function (theme) {
+              return theme + ' · 提到 ' + counts[theme] + ' 次';
+            });
+        }
+
+        function formatDateTime(date) {
+          return date.getFullYear() + '年' + pad(date.getMonth() + 1) + '月' + pad(date.getDate()) + '日 ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+        }
+
+        function formatShortTime(date) {
+          return pad(date.getMonth() + 1) + '月' + pad(date.getDate()) + '日 ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+        }
+
+        function formatDayKey(date) {
+          return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+        }
+
+        function daysBetween(a, b) {
+          return Math.floor((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+        }
+
+        function pad(value) {
+          return String(value).padStart(2, '0');
+        }
+
+        var toastTimer = null;
+        function showToast(message) {
+          toast.textContent = message;
+          toast.classList.add('is-visible');
+          if (toastTimer) {
+            clearTimeout(toastTimer);
+          }
+          toastTimer = setTimeout(function () {
+            toast.classList.remove('is-visible');
+          }, 1800);
+        }
+      })();
+    </script>
+  </body>
+</html>
