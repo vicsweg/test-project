@@ -1,0 +1,110 @@
+<view class="page-shell">
+  <view class="article-panel card">
+    <view class="badge">微信公众号文章</view>
+    <view class="article-title">{{article.title}}</view>
+    <view class="article-meta">
+      <text>{{article.author}}</text>
+      <text>{{article.dateLabel}}</text>
+    </view>
+
+    <view class="article-content">
+      <view wx:for="{{article.paragraphs}}" wx:key="*this" class="article-paragraph">{{item}}</view>
+    </view>
+
+    <view class="article-summary-box">
+      <view class="summary-label">文章摘要</view>
+      <view class="summary-text">{{article.excerpt}}</view>
+    </view>
+
+    <button class="floating-button" bindtap="sendToAssistant" aria-label="发送到文件传输助手">
+      <text>＋</text>
+    </button>
+  </view>
+
+  <view class="assistant-panel card">
+    <view class="assistant-header">
+      <view>
+        <view class="assistant-label">文件传输助手</view>
+        <view class="assistant-title">自动归类整理</view>
+      </view>
+      <button class="toggle-button" bindtap="toggleMode">
+        {{mode === 'day' ? '切换为周整理' : '切换为日整理'}}
+      </button>
+    </view>
+
+    <view class="section card-section">
+      <view class="section-title">已收录消息</view>
+      <block wx:if="{{messages.length}}">
+        <view wx:for="{{messages}}" wx:key="id" class="message-item">
+          <view class="message-meta">
+            <view class="message-tag">公众号文章</view>
+            <text>{{item.displayTime}}</text>
+          </view>
+          <view class="message-title">{{item.title}}</view>
+          <view class="message-text">{{item.excerpt}} {{item.note}}</view>
+        </view>
+      </block>
+      <view wx:else class="empty-state">还没有收录消息。点击文章右下角圆形按钮，模拟把文章发到文件传输助手。</view>
+    </view>
+
+    <view class="section digest-section">
+      <view class="section-title">{{digest.title}}</view>
+      <view class="digest-item">
+        <view class="digest-summary">{{digest.summary}}</view>
+
+        <view wx:if="{{digest.articleBriefs.length}}" class="digest-block">
+          <view class="digest-block__title">真实文章摘要化</view>
+          <view class="article-brief-list">
+            <view wx:for="{{digest.articleBriefs}}" wx:key="title" class="article-brief-card">
+              <view class="article-brief-title">{{item.title}}</view>
+              <view class="article-brief-author">{{item.author}}</view>
+              <view class="article-brief-line"><text class="article-brief-label">问题：</text>{{item.problem}}</view>
+              <view class="article-brief-line"><text class="article-brief-label">方法：</text>{{item.method}}</view>
+              <view class="article-brief-line"><text class="article-brief-label">价值：</text>{{item.value}}</view>
+            </view>
+          </view>
+        </view>
+
+        <view wx:if="{{digest.themes.length}}" class="digest-block">
+          <view class="digest-block__title">核心主题</view>
+          <view class="theme-list">
+            <view wx:for="{{digest.themes}}" wx:key="*this" class="theme-item">{{item}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{digest.keyPoints.length}}" class="digest-block">
+          <view class="digest-block__title">关键观点</view>
+          <view class="digest-lines">
+            <view wx:for="{{digest.keyPoints}}" wx:key="*this" class="digest-line">{{item}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{digest.connections}}" class="digest-block">
+          <view class="digest-block__title">串联意义</view>
+          <view class="digest-paragraph">{{digest.connections}}</view>
+        </view>
+
+        <view wx:if="{{digest.weeklyChain.length}}" class="digest-block">
+          <view class="digest-block__title">多篇文章串联</view>
+          <view class="digest-lines">
+            <view wx:for="{{digest.weeklyChain}}" wx:key="*this" class="digest-line">{{item}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{digest.actions.length}}" class="digest-block">
+          <view class="digest-block__title">建议动作</view>
+          <view class="digest-lines">
+            <view wx:for="{{digest.actions}}" wx:key="*this" class="digest-line">{{index + 1}}. {{item}}</view>
+          </view>
+        </view>
+
+        <view wx:if="{{digest.items.length}}" class="digest-block">
+          <view class="digest-block__title">来源线索</view>
+          <view class="digest-lines">
+            <view wx:for="{{digest.items}}" wx:key="*this" class="digest-line">{{item}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
