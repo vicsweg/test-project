@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>微信文章收藏到文件传输助手原型</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="article-panel">
+        <header class="article-header">
+          <span class="badge">微信公众号文章</span>
+          <h1 id="article-title">把 AI 工作流连点成线：今天看到的内容，今晚自动整理给自己</h1>
+          <div class="article-meta">
+            <span id="article-author">连点成线实验室</span>
+            <span id="article-date"></span>
+          </div>
+        </header>
+
+        <article class="article-content">
+          <p>
+            当你刷到一篇值得存档的公众号文章时，往往要么收藏后就沉底，要么手动转发给文件传输助手，后续仍然缺少按天、按周的统一整理。
+          </p>
+          <p>
+            这个原型模拟了一个更顺手的动作：在文章页右下角放一个类似苹果风格的圆形按钮，轻点一下，就把当前文章作为一条消息发送到“文件传输助手”。
+          </p>
+          <p>
+            文件传输助手会自动把当天保存的内容归档到“今日灵感”，并在周维度生成“本周脉络”，将多条消息串联成线索再回发给你。
+          </p>
+        </article>
+
+        <button id="save-button" class="floating-button" aria-label="发送到文件传输助手">
+          <span>＋</span>
+        </button>
+
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </section>
+
+      <aside class="assistant-panel">
+        <div class="assistant-card">
+          <div class="assistant-header">
+            <div>
+              <p class="assistant-label">文件传输助手</p>
+              <h2>自动归类整理</h2>
+            </div>
+            <button id="summary-mode" class="summary-toggle" type="button">切换为周整理</button>
+          </div>
+
+          <section class="message-list">
+            <h3>已收录消息</h3>
+            <div id="messages"></div>
+          </section>
+
+          <section class="digest-box">
+            <h3 id="digest-title">今日整理</h3>
+            <div id="digest"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <template id="message-template">
+      <article class="message-item">
+        <div class="message-item__meta">
+          <span class="message-tag">公众号文章</span>
+          <time></time>
+        </div>
+        <h4></h4>
+        <p></p>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

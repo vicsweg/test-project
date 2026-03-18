@@ -3,7 +3,7 @@
     "pages/index/index"
   ],
   "window": {
-    "navigationBarTitleText": "微信文章收藏助手",
+    "navigationBarTitleText": "文章线索助手",
     "navigationBarBackgroundColor": "#f7f8fc",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f4f6fb",

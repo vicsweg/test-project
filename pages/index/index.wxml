@@ -1,109 +1,65 @@
-<view class="page-shell">
-  <view class="article-panel card">
-    <view class="badge">微信公众号文章</view>
-    <view class="article-title">{{article.title}}</view>
-    <view class="article-meta">
-      <text>{{article.author}}</text>
-      <text>{{article.dateLabel}}</text>
+<view class="page">
+  <view class="hero card">
+    <view class="hero__badge">微信里可用的小程序原型</view>
+    <view class="hero__title">把公众号文章收进“我的助手”</view>
+    <view class="hero__desc">
+      你不能直接给微信公众号文章页注入一个自定义按钮，但可以在微信小程序里导入文章链接，再按天、按周自动整理。
     </view>
-
-    <view class="article-content">
-      <view wx:for="{{article.paragraphs}}" wx:key="*this" class="article-paragraph">{{item}}</view>
-    </view>
-
-    <view class="article-summary-box">
-      <view class="summary-label">文章摘要</view>
-      <view class="summary-text">{{article.excerpt}}</view>
-    </view>
-
-    <button class="floating-button" bindtap="sendToAssistant" aria-label="发送到文件传输助手">
-      <text>＋</text>
-    </button>
+    <view class="tip">{{supportMessage}}</view>
   </view>
 
-  <view class="assistant-panel card">
-    <view class="assistant-header">
+  <view class="card import-box">
+    <view class="section-title">1. 导入公众号文章</view>
+    <textarea
+      class="url-input"
+      placeholder="粘贴公众号文章链接，例如 https://mp.weixin.qq.com/s/..."
+      value="{{articleUrl}}"
+      bindinput="handleUrlInput"
+      maxlength="-1"
+    />
+    <view class="button-row">
+      <button class="button button--ghost" bindtap="pasteFromClipboard">粘贴剪贴板</button>
+      <button class="button button--ghost" bindtap="fillDemoLink">填入演示链接</button>
+      <button class="button button--primary" bindtap="importArticle">收进助手</button>
+    </view>
+  </view>
+
+  <view class="card digest-box">
+    <view class="toolbar">
       <view>
-        <view class="assistant-label">文件传输助手</view>
-        <view class="assistant-title">自动归类整理</view>
+        <view class="section-title">2. 自动归类整理</view>
+        <view class="muted">{{digest.title}}</view>
       </view>
-      <button class="toggle-button" bindtap="toggleMode">
+      <button class="button button--ghost" bindtap="toggleMode">
         {{mode === 'day' ? '切换为周整理' : '切换为日整理'}}
       </button>
     </view>
 
-    <view class="section card-section">
-      <view class="section-title">已收录消息</view>
-      <block wx:if="{{messages.length}}">
-        <view wx:for="{{messages}}" wx:key="id" class="message-item">
-          <view class="message-meta">
-            <view class="message-tag">公众号文章</view>
-            <text>{{item.displayTime}}</text>
-          </view>
-          <view class="message-title">{{item.title}}</view>
-          <view class="message-text">{{item.excerpt}} {{item.note}}</view>
-        </view>
-      </block>
-      <view wx:else class="empty-state">还没有收录消息。点击文章右下角圆形按钮，模拟把文章发到文件传输助手。</view>
+    <view class="digest-summary">{{digest.summary}}</view>
+
+    <view wx:if="{{digest.themes.length}}" class="chip-row">
+      <view wx:for="{{digest.themes}}" wx:key="*this" class="chip">{{item}}</view>
     </view>
 
-    <view class="section digest-section">
-      <view class="section-title">{{digest.title}}</view>
-      <view class="digest-item">
-        <view class="digest-summary">{{digest.summary}}</view>
+    <view wx:if="{{digest.timeline.length}}" class="timeline">
+      <view wx:for="{{digest.timeline}}" wx:key="*this" class="timeline-item">{{item}}</view>
+    </view>
 
-        <view wx:if="{{digest.articleBriefs.length}}" class="digest-block">
-          <view class="digest-block__title">真实文章摘要化</view>
-          <view class="article-brief-list">
-            <view wx:for="{{digest.articleBriefs}}" wx:key="title" class="article-brief-card">
-              <view class="article-brief-title">{{item.title}}</view>
-              <view class="article-brief-author">{{item.author}}</view>
-              <view class="article-brief-line"><text class="article-brief-label">问题：</text>{{item.problem}}</view>
-              <view class="article-brief-line"><text class="article-brief-label">方法：</text>{{item.method}}</view>
-              <view class="article-brief-line"><text class="article-brief-label">价值：</text>{{item.value}}</view>
-            </view>
-          </view>
-        </view>
+    <button class="button button--primary copy-button" bindtap="copyDigest">复制整理结果</button>
+  </view>
 
-        <view wx:if="{{digest.themes.length}}" class="digest-block">
-          <view class="digest-block__title">核心主题</view>
-          <view class="theme-list">
-            <view wx:for="{{digest.themes}}" wx:key="*this" class="theme-item">{{item}}</view>
-          </view>
-        </view>
-
-        <view wx:if="{{digest.keyPoints.length}}" class="digest-block">
-          <view class="digest-block__title">关键观点</view>
-          <view class="digest-lines">
-            <view wx:for="{{digest.keyPoints}}" wx:key="*this" class="digest-line">{{item}}</view>
-          </view>
-        </view>
-
-        <view wx:if="{{digest.connections}}" class="digest-block">
-          <view class="digest-block__title">串联意义</view>
-          <view class="digest-paragraph">{{digest.connections}}</view>
-        </view>
-
-        <view wx:if="{{digest.weeklyChain.length}}" class="digest-block">
-          <view class="digest-block__title">多篇文章串联</view>
-          <view class="digest-lines">
-            <view wx:for="{{digest.weeklyChain}}" wx:key="*this" class="digest-line">{{item}}</view>
-          </view>
-        </view>
-
-        <view wx:if="{{digest.actions.length}}" class="digest-block">
-          <view class="digest-block__title">建议动作</view>
-          <view class="digest-lines">
-            <view wx:for="{{digest.actions}}" wx:key="*this" class="digest-line">{{index + 1}}. {{item}}</view>
-          </view>
-        </view>
-
-        <view wx:if="{{digest.items.length}}" class="digest-block">
-          <view class="digest-block__title">来源线索</view>
-          <view class="digest-lines">
-            <view wx:for="{{digest.items}}" wx:key="*this" class="digest-line">{{item}}</view>
-          </view>
-        </view>
+  <view class="card messages-box">
+    <view class="section-title">3. 已收录文章</view>
+    <view wx:for="{{messages}}" wx:key="id" class="message-item">
+      <view class="message-meta">
+        <text>{{item.source}}</text>
+        <text>{{item.displayTime}}</text>
+      </view>
+      <view class="message-title">{{item.title}}</view>
+      <view class="message-excerpt">{{item.excerpt}}</view>
+      <view class="message-note">{{item.note}}</view>
+      <view class="chip-row compact">
+        <view wx:for="{{item.tags}}" wx:key="*this" class="chip chip--light">{{item}}</view>
       </view>
     </view>
   </view>
