@@ -1,0 +1,66 @@
+<view class="page">
+  <view class="hero card">
+    <view class="hero__badge">微信里可用的小程序原型</view>
+    <view class="hero__title">把公众号文章收进“我的助手”</view>
+    <view class="hero__desc">
+      你不能直接给微信公众号文章页注入一个自定义按钮，但可以在微信小程序里导入文章链接，再按天、按周自动整理。
+    </view>
+    <view class="tip">{{supportMessage}}</view>
+  </view>
+
+  <view class="card import-box">
+    <view class="section-title">1. 导入公众号文章</view>
+    <textarea
+      class="url-input"
+      placeholder="粘贴公众号文章链接，例如 https://mp.weixin.qq.com/s/..."
+      value="{{articleUrl}}"
+      bindinput="handleUrlInput"
+      maxlength="-1"
+    />
+    <view class="button-row">
+      <button class="button button--ghost" bindtap="pasteFromClipboard">粘贴剪贴板</button>
+      <button class="button button--ghost" bindtap="fillDemoLink">填入演示链接</button>
+      <button class="button button--primary" bindtap="importArticle">收进助手</button>
+    </view>
+  </view>
+
+  <view class="card digest-box">
+    <view class="toolbar">
+      <view>
+        <view class="section-title">2. 自动归类整理</view>
+        <view class="muted">{{digest.title}}</view>
+      </view>
+      <button class="button button--ghost" bindtap="toggleMode">
+        {{mode === 'day' ? '切换为周整理' : '切换为日整理'}}
+      </button>
+    </view>
+
+    <view class="digest-summary">{{digest.summary}}</view>
+
+    <view wx:if="{{digest.themes.length}}" class="chip-row">
+      <view wx:for="{{digest.themes}}" wx:key="*this" class="chip">{{item}}</view>
+    </view>
+
+    <view wx:if="{{digest.timeline.length}}" class="timeline">
+      <view wx:for="{{digest.timeline}}" wx:key="*this" class="timeline-item">{{item}}</view>
+    </view>
+
+    <button class="button button--primary copy-button" bindtap="copyDigest">复制整理结果</button>
+  </view>
+
+  <view class="card messages-box">
+    <view class="section-title">3. 已收录文章</view>
+    <view wx:for="{{messages}}" wx:key="id" class="message-item">
+      <view class="message-meta">
+        <text>{{item.source}}</text>
+        <text>{{item.displayTime}}</text>
+      </view>
+      <view class="message-title">{{item.title}}</view>
+      <view class="message-excerpt">{{item.excerpt}}</view>
+      <view class="message-note">{{item.note}}</view>
+      <view class="chip-row compact">
+        <view wx:for="{{item.tags}}" wx:key="*this" class="chip chip--light">{{item}}</view>
+      </view>
+    </view>
+  </view>
+</view>
